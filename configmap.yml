@@ -1,0 +1,62 @@
+---
+# Created from config file:
+#   kubectl create configmap gogs-main-config --from-file=gogs/config/app.ini
+# Dumped via kubectl:
+#   kubectl get configmaps gogs-main-config -o yaml
+apiVersion: v1
+data:
+  app.ini: |
+    APP_NAME = Gogs for crn @ k8s
+    RUN_USER = git
+    RUN_MODE = prod
+
+    [database]
+    DB_TYPE  = sqlite3
+    HOST     = 127.0.0.1:3306
+    NAME     = gogs
+    USER     = root
+    PASSWD   =
+    SSL_MODE = disable
+    PATH     = data/gogs.db
+
+    [repository]
+    ROOT = /data/git/gogs-repositories
+
+    [server]
+    DOMAIN           = localhost
+    HTTP_PORT        = 3000
+    ROOT_URL         = http://localhost:30000/
+    DISABLE_SSH      = false
+    SSH_PORT         = 30022
+    START_SSH_SERVER = false
+    OFFLINE_MODE     = false
+
+    [mailer]
+    ENABLED = false
+
+    [service]
+    REGISTER_EMAIL_CONFIRM = false
+    ENABLE_NOTIFY_MAIL     = false
+    DISABLE_REGISTRATION   = false
+    ENABLE_CAPTCHA         = false
+    REQUIRE_SIGNIN_VIEW    = false
+
+    [picture]
+    DISABLE_GRAVATAR        = false
+    ENABLE_FEDERATED_AVATAR = false
+
+    [session]
+    PROVIDER = file
+
+    [log]
+    MODE      = file
+    LEVEL     = Info
+    ROOT_PATH = /app/gogs/log
+
+    [security]
+    INSTALL_LOCK = true
+    SECRET_KEY   = idiLVJPW0MdFYOi
+kind: ConfigMap
+metadata:
+  name: gogs-main-config
+  namespace: default

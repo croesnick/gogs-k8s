@@ -1,0 +1,82 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: gogs-svc
+spec:
+  ports:
+    - name: gogs-http
+      protocol: TCP
+      nodePort: 30000
+      port: 80
+      targetPort: gogs-http
+    - name: gogs-ssh
+      protocol: TCP
+      nodePort: 30022
+      port: 22
+      targetPort: gogs-ssh
+  selector:
+    app: gogs
+  type: NodePort
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: gogs-pv-claim
+  labels:
+    app: gogs
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+
+---
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: gogs-depl
+  labels:
+    app: gogs
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3000"
+        prometheus.io/endpoint: "/-/metrics"
+      labels:
+        app: gogs
+    spec:
+      containers:
+        - name: gogs
+          image: gogs/gogs:latest
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1Gi
+          ports:
+            - name: gogs-ssh
+              containerPort: 22
+            - name: gogs-http
+              containerPort: 3000
+          volumeMounts:
+            - name: gogs-storage
+              mountPath: /data
+            - name: gogs-main-config
+              mountPath: /data/gogs/conf
+      volumes:
+        - name: gogs-storage
+          persistentVolumeClaim:
+            claimName: gogs-pv-claim
+        - name: gogs-main-config
+          configMap:
+            name: gogs-main-config
+            items:
+              - key: app.ini
+                path: app.ini
