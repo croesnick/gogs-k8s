@@ -7,17 +7,15 @@ spec:
   ports:
     - name: gogs-http
       protocol: TCP
-      nodePort: 30000
       port: 80
       targetPort: gogs-http
     - name: gogs-ssh
       protocol: TCP
-      nodePort: 30022
       port: 22
       targetPort: gogs-ssh
   selector:
     app: gogs
-  type: NodePort
+  type: ClusterIP
 
 ---
 kind: PersistentVolumeClaim
@@ -56,20 +54,42 @@ spec:
       containers:
         - name: gogs
           image: gogs/gogs:latest
-          resources:
-            requests:
-              cpu: 100m
-              memory: 1Gi
+          env:
+            # https://github.com/gogits/gogs/tree/master/docker#container-options
+            - name: SOCAT_LINK
+              value: "false"
+          livenessProbe:
+            initialDelaySeconds: 180
+            httpGet:
+              path: /
+              port: gogs-http
           ports:
             - name: gogs-ssh
               containerPort: 22
             - name: gogs-http
               containerPort: 3000
+          readinessProbe:
+            initialDelaySeconds: 180
+            httpGet:
+              path: /
+              port: gogs-http
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512m
+          volumeMounts:
+            - name: gogs-storage
+              mountPath: /data
+      initContainers:
+        - name: gogs-write-main-config
+          command: ["/bin/sh"]
+          args: ["-c", "mkdir -p /data/gogs/conf ; cat /custom/app.ini > /data/gogs/conf/app.ini"]
+          image: busybox
           volumeMounts:
             - name: gogs-storage
               mountPath: /data
             - name: gogs-main-config
-              mountPath: /data/gogs/conf
+              mountPath: /custom
       volumes:
         - name: gogs-storage
           persistentVolumeClaim:

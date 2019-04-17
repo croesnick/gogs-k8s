@@ -1,0 +1,10 @@
+---
+controller:
+  stats:
+    enabled: true
+  metrics:
+    enabled: true
+  extraArgs:
+    tcp-services-configmap: default/tcp-gogs-ssh
+tcp:
+  22: "default/gogs-svc:22"

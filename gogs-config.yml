@@ -1,12 +1,8 @@
 ---
-# Created from config file:
-#   kubectl create configmap gogs-main-config --from-file=gogs/config/app.ini
-# Dumped via kubectl:
-#   kubectl get configmaps gogs-main-config -o yaml
 apiVersion: v1
 data:
   app.ini: |
-    APP_NAME = Gogs for crn @ k8s
+    APP_NAME = Gogs on k8s
     RUN_USER = git
     RUN_MODE = prod
 
@@ -23,13 +19,10 @@ data:
     ROOT = /data/git/gogs-repositories
 
     [server]
-    DOMAIN           = localhost
+    ROOT_URL         = http://gogs.k8s/
+    DOMAIN           = gogs.k8s
     HTTP_PORT        = 3000
-    ROOT_URL         = http://localhost:30000/
-    DISABLE_SSH      = false
-    SSH_PORT         = 30022
-    START_SSH_SERVER = false
-    OFFLINE_MODE     = false
+    SSH_PORT         = 22
 
     [mailer]
     ENABLED = false
@@ -50,7 +43,7 @@ data:
 
     [log]
     MODE      = file
-    LEVEL     = Info
+    LEVEL     = Trace
     ROOT_PATH = /app/gogs/log
 
     [security]
@@ -58,5 +51,7 @@ data:
     SECRET_KEY   = idiLVJPW0MdFYOi
 kind: ConfigMap
 metadata:
+  labels:
+    app: gogs
   name: gogs-main-config
   namespace: default
