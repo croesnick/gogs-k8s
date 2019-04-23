@@ -88,9 +88,10 @@ spec:
             - >-
               mkdir -p /data/gogs/conf &&
               python /bin/custom/inject.py /custom/app.ini > /data/gogs/conf/app.ini
-          env:
-            - name: GOGS__SECURITY__SECRET_KEY
-              value: idiLVJPW0MdFYOi
+          envFrom:
+            - secretRef:
+                name: gogs-secrets
+                optional: false
           image: python:3.7-alpine
           volumeMounts:
             - name: gogs-storage

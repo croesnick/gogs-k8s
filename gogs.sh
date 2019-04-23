@@ -14,5 +14,6 @@ kubectl create \
     --from-file=config/gogs/app.ini |
 kubectl apply -f -
 
+kubectl apply -f gogs-secrets.yml
 kubectl apply -f gogs.yml
 kubectl apply -f gogs-ingress.yml
