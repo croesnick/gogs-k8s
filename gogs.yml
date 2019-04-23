@@ -83,13 +83,23 @@ spec:
       initContainers:
         - name: gogs-write-main-config
           command: ["/bin/sh"]
-          args: ["-c", "mkdir -p /data/gogs/conf ; cat /custom/app.ini > /data/gogs/conf/app.ini"]
-          image: busybox
+          args:
+            - "-c"
+            - >-
+              mkdir -p /data/gogs/conf &&
+              python /bin/custom/inject.py /custom/app.ini > /data/gogs/conf/app.ini
+          env:
+            - name: GOGS__SECURITY__SECRET_KEY
+              value: idiLVJPW0MdFYOi
+          image: python:3.7-alpine
           volumeMounts:
             - name: gogs-storage
               mountPath: /data
             - name: gogs-main-config
               mountPath: /custom
+            - name: gogs-secret-inject-script
+              mountPath: /bin/custom
+              readOnly: true
       volumes:
         - name: gogs-storage
           persistentVolumeClaim:
@@ -100,3 +110,9 @@ spec:
             items:
               - key: app.ini
                 path: app.ini
+        - name: gogs-secret-inject-script
+          configMap:
+            name: ini-secret-inject-script
+            items:
+              - key: ini-inject-secrets.py
+                path: inject.py

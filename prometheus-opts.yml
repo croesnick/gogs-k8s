@@ -1,0 +1,19 @@
+---
+alertmanager:
+  baseUrl: alertmanager.prometheus.k8s
+  enabled: true
+  ingress:
+    enabled: true
+    hosts:
+      - alertmanager.prometheus.k8s
+  persistentVolume:
+    enabled: true
+pushgateway:
+  enabled: false
+server:
+  ingress:
+    enabled: true
+    hosts:
+      - prometheus.k8s
+  persistentVolume:
+    enabled: true
