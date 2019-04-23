@@ -17,4 +17,7 @@ In addition to the name resolution setup, ensure you have [`helm`](https://helm.
 
 - Initialize helm: `./helm-init.sh`
 - Set up nginx as ingress controller: `./nginx.sh`
+- Set up prometheus: `./prometheus.sh`
 - Set up gogs: `./gogs.sh`
+
+After a short while (check `kubectl get po -w`), [Gogs](http://gogs.k8s), [Prometheus](http://prometheus.k8s), and [Alertmanager](http://alertmanager.prometheus.k8s) should be up and accessible.
