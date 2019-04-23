@@ -21,8 +21,7 @@ class NoDefaultHeaderConfigParser(ConfigParser):
             fp.write("[{}]\n".format(section_name))
 
         for key, value in section_items:
-            value = self._interpolation.before_write(self, section_name, key,
-                                                     value)
+            value = self._interpolation.before_write(self, section_name, key, value)
             if value is not None or not self._allow_no_value:
                 value = delimiter + str(value).replace('\n', '\n\t')
             else:
@@ -67,6 +66,7 @@ config_file = sys.argv[1]
 logger.info(f'Reading configuration from file: {config_file}')
 
 parser = NoDefaultHeaderConfigParser()
+parser.optionxform = lambda opt: opt
 parser.read_file(config_file)
 
 logger.debug(f'Read config contains sections (modulo default one): {parser.sections()}')
