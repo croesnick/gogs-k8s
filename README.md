@@ -17,4 +17,4 @@ In addition to the name resolution setup, ensure you have [`helm`](https://helm.
 
 - Initialize helm: `./helm-init.sh`
 - Set up nginx as ingress controller: `./nginx.sh`
-- Set up gogs: `for config in gogs*.yml ; do kubectl apply -f ${config} ; done`
+- Set up gogs: `./gogs.sh`
